@@ -1,5 +1,47 @@
-.DS_Store
-.idea/
-.vscode/
+# Logs - never commit actual honeypot logs
+logs/
 *.log
 *.json
+
+# Environment variables
+.env
+*.env
+.env.*
+
+# Terraform state files - may contain sensitive data
+terraform/.terraform/
+terraform/**/.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# Kubernetes secrets - never commit
+kubernetes/secrets/
+*secret*.yaml
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+._*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.pytest_cache/
+
+# Docker
+.dockerignore
+
+# Temporary files
+*.tmp
+*.bak

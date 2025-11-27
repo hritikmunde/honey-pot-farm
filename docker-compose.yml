@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  web-server:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+    container_name: honeypot-web-server
+    ports:
+      - "2222:2222"
+    volumes:
+      - ./logs/web-server:/cowrie/cowrie-git/var/log/cowrie
+      - ./docker/configs/web-server.cfg:/cowrie/cowrie-git/etc/cowrie.cfg:ro
+    restart: unless-stopped
+
+  edge-router:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+    container_name: honeypot-edge-router
+    ports:
+      - "2223:2222"
+    volumes:
+      - ./logs/edge-router:/cowrie/cowrie-git/var/log/cowrie
+      - ./docker/configs/edge-router.cfg:/cowrie/cowrie-git/etc/cowrie.cfg:ro
+    restart: unless-stopped
+  
+  domain-controller:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+    container_name: honeypot-domain-controller
+    ports:
+      - "2224:2222"
+    volumes:
+      - ./logs/domain-controller:/cowrie/cowrie-git/var/log/cowrie
+      - ./docker/configs/domain-controller.cfg:/cowrie/cowrie-git/etc/cowrie.cfg:ro
+    restart: unless-stopped
