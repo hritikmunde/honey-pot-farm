@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - deployment-web-server.yaml
+  - deployment-edge-router.yaml
+  - deployment-domain-controller.yaml
+  - configmap-web-server.yaml
+  - configmap-edge-router.yaml
+  - configmap-domain-controller.yaml
+  - service.yaml
