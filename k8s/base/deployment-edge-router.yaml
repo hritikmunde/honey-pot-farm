@@ -29,7 +29,12 @@ spec:
             - name: config
               mountPath: /cowrie/cowrie-git/etc/cowrie.cfg
               subPath: cowrie.cfg
+            - name: logs
+              mountPath: /cowrie/cowrie-git/var/log/cowrie
       volumes:
         - name: config
           configMap:
             name: cowrie-config-edge-router
+        - name: logs
+          persistentVolumeClaim:
+            claimName: cowrie-logs-edge-router

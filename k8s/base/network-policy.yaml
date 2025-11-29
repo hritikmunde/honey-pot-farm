@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: honeypot-isolation
+spec:
+  podSelector:
+    matchLabels:
+      app: honeypot
+  policyTypes:
+  - Egress
+  egress:
+  # Block all outbound except DNS
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53

@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: honeypot-web-server
+  labels:
+    app: honeypot
+    type: web-server
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+spec:
+  type: LoadBalancer
+  selector:
+    app: honeypot
+    type: web-server
+  ports:
+  - name: ssh
+    port: 22
+    targetPort: 2222
+    protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: honeypot-edge-router
+  labels:
+    app: honeypot
+    type: edge-router
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+spec:
+  type: LoadBalancer
+  selector:
+    app: honeypot
+    type: edge-router
+  ports:
+  - name: ssh
+    port: 22
+    targetPort: 2222
+    protocol: TCP
+  - name: telnet
+    port: 23
+    targetPort: 2323
+    protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: honeypot-domain-controller
+  labels:
+    app: honeypot
+    type: domain-controller
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+spec:
+  type: LoadBalancer
+  selector:
+    app: honeypot
+    type: domain-controller
+  ports:
+  - name: ssh
+    port: 22
+    targetPort: 2222
+    protocol: TCP
