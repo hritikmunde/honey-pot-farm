@@ -35,6 +35,7 @@ This project deploys multiple SSH/Telnet honeypots with different personas to ca
 
 ## 🚀 Quick Start
 
+### Local
 ### Prerequisites
 - Docker & Docker Compose
 - (Later: kubectl, minikube, terraform, AWS CLI)
@@ -77,6 +78,55 @@ kubectl apply -k kubernetes/base/
 
 # Deploy monitoring stack
 kubectl apply -f kubernetes/monitoring/
+```
+## On AWS with EKS
+### Prerequisites
+- AWS Account with credentials configured
+- Terraform >= 1.0
+- kubectl
+- Helm 3
+
+### Deploy Infrastructure
+```bash
+# 1. Clone repository
+git clone https://github.com/YOUR_USERNAME/automated-honeypot-farm.git
+cd automated-honeypot-farm
+
+# 2. Deploy AWS infrastructure
+cd terraform/aws
+terraform init
+terraform apply  # Takes ~15 minutes
+
+# 3. Configure kubectl
+aws eks update-kubeconfig --region us-east-1 --name honeypot-farm
+
+# 4. Verify cluster
+kubectl get nodes
+
+# 5. Deploy honeypots
+cd ../..
+kubectl apply -f k8s/base/
+
+# 6. Get LoadBalancer URLs (takes 2-3 minutes)
+kubectl get services
+```
+
+### Monitor Logs
+```bash
+# View real-time logs
+kubectl logs -f deployment/honeypot-web-server
+
+# Count login attempts
+kubectl logs deployment/honeypot-web-server | grep "login attempt" | wc -l
+
+# Download logs for analysis
+kubectl logs deployment/honeypot-web-server > web-server.log
+```
+
+### Clean Up (Stop AWS Charges)
+```bash
+cd terraform/aws
+terraform destroy  # Removes all AWS resources
 ```
 
 ## 📁 Project Structure
@@ -139,16 +189,68 @@ Analysis scripts provide:
 ## 📝 Documentation
 
 - [Project Proposal](docs/proposal.md) - Original project goals and objectives
-- Architecture Design (Coming soon)
-- Deployment Guide (Coming soon)
+
+## 📊 Deployment Status
+
+**Live Since:** November 29, 2024  
+**Platform:** AWS EKS (us-east-1)  
+**Status:** 🟢 Active - Collecting Data
+
+### Current Statistics
+- **Honeypots Running:** 3 types (web-server, edge-router, domain-controller)
+- **Replicas:** 2 per type (6 pods total)
+- **Data Collection:** 24-48 hours
+- **Log Storage:** AWS EBS (PersistentVolumes)
+
+*Statistics will be updated after data collection period.*
+
+## 🏗️ Architecture
+```
+┌─────────────────────────────────────────────────────┐
+│                    Internet                         │
+└───────────────────┬─────────────────────────────────┘
+                        │
+            ┌───────────┼───────────┐
+            │           │           │
+            ▼           ▼           ▼
+        [AWS NLB]   [AWS NLB]   [AWS NLB]
+        Port 22     Port 22     Port 22/23
+            │           │           │
+    ┌───────┴───────────┴───────────┴────────┐
+    │         AWS EKS Cluster                │
+    │  ┌──────────────────────────────────┐  │
+    │  │    Honeypot Deployments          │  │
+    │  │  ┌────────────────────────────┐  │  │
+    │  │  │ Web Server (2 replicas)    │  │  │
+    │  │  │ Edge Router (2 replicas)   │  │  │
+    │  │  │ Domain Controller (2 reps) │  │  │
+    │  │  └────────────────────────────┘  │  │
+    │  │           │                      │  │
+    │  │           ▼                      │  │
+    │  │  ┌────────────────────────────┐  │  │
+    │  │  │  PersistentVolumes (EBS)   │  │  │
+    │  │  │  - Logs stored here        │  │  │
+    │  │  └────────────────────────────┘  │  │
+    │  └──────────────────────────────────┘  │
+    └────────────────────────────────────────┘
+```
 
 ## 🔒 Security Considerations
 
-All honeypots are isolated using:
-- Kubernetes NetworkPolicies (block outbound traffic)
-- Disabled file execution
-- Anonymized logging (IPs hashed in reports)
-- No production data exposure
+### Network Isolation
+- **NetworkPolicies:** Block all outbound traffic except DNS
+- **AWS Security Groups:** Restrict management access
+- **Egress Filtering:** Prevent honeypots from attacking other systems
+
+### Data Protection
+- All logs stored on encrypted EBS volumes
+- No production data or credentials exposed
+- IP addresses will be anonymized in published reports
+
+### Ethical Considerations
+- Honeypots are isolated and cannot harm other systems
+- Complies with university research policies
+- No active scanning or offensive operations
 
 ## 👤 Author
 
