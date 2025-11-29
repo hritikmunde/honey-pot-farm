@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: honeypot-domain-controller
+  labels:
+    app: honeypot
+    type: domain-controller
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: honeypot
+      type: domain-controller
+  template:
+    metadata:
+      labels:
+        app: honeypot
+        type: domain-controller
+    spec:
+      containers:
+        - name: cowrie
+          image: cowrie/cowrie:latest
+          ports:
+            - containerPort: 2222
+              name: ssh
+          volumeMounts:
+            - name: config
+              mountPath: /cowrie/cowrie-git/etc/cowrie.cfg
+              subPath: cowrie.cfg
+      volumes:
+        - name: config
+          configMap:
+            name: cowrie-config-domain-controller

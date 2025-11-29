@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: honeypot-edge-router
+  labels:
+    app: honeypot
+    type: edge-router
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: honeypot
+      type: edge-router
+  template:
+    metadata:
+      labels:
+        app: honeypot
+        type: edge-router
+    spec:
+      containers:
+        - name: cowrie
+          image: cowrie/cowrie:latest
+          ports:
+            - containerPort: 2222
+              name: ssh
+            - containerPort: 2323
+              name: telnet
+          volumeMounts:
+            - name: config
+              mountPath: /cowrie/cowrie-git/etc/cowrie.cfg
+              subPath: cowrie.cfg
+      volumes:
+        - name: config
+          configMap:
+            name: cowrie-config-edge-router

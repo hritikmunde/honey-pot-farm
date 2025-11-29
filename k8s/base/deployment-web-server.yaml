@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: honeypot-web-server
+  labels:
+    app: honeypot
+    type: web-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: honeypot
+      type: web-server
+  template:
+    metadata:
+      labels:
+        app: honeypot
+        type: web-server
+    spec:
+      containers:
+        - name: cowrie
+          image: cowrie/cowrie:latest
+          ports:
+            - containerPort: 2222
+              name: ssh
+          volumeMounts:
+            - name: config
+              mountPath: /cowrie/cowrie-git/etc/cowrie.cfg
+              subPath: cowrie.cfg
+      volumes:
+        - name: config
+          configMap:
+            name: cowrie-config-web-server

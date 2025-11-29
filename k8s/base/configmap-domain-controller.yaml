@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cowrie-config-domain-controller
+  labels:
+    app: honeypot
+    type: domain-controller
+data:
+  cowrie.cfg: |
+    [honeypot]
+    hostname = DC-PRIMARY-001
+
+    [ssh]
+    listen_port = 2222
+
+    [telnet]
+    enabled = false
+
+    [output_jsonlog]
+    enabled = true
+    logfile = /cowrie/cowrie-git/var/log/cowrie/cowrie.json

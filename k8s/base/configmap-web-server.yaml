@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cowrie-config-web-server
+  labels:
+    app: honeypot
+    type: web-server
+data:
+  cowrie.cfg: |
+    [honeypot]
+    hostname = web-prod-us-east-1a
+
+    [ssh]
+    listen_port = 2222
+
+    [telnet]
+    enabled = false
+
+    [output_jsonlog]
+    enabled = true
+    logfile = /cowrie/cowrie-git/var/log/cowrie/cowrie.json
