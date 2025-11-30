@@ -17,6 +17,14 @@ spec:
         app: honeypot
         type: edge-router
     spec:
+      initContainers:
+        - name: fix-permissions
+          image: busybox
+          # Create the file AND fix permissions so Cowrie can write to it
+          command: ["sh", "-c", "mkdir -p /logs && chown -R 999:999 /logs"]
+          volumeMounts:
+            - name: logs
+              mountPath: /logs
       containers:
         - name: cowrie
           image: cowrie/cowrie:latest
